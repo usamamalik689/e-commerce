@@ -1,0 +1,169 @@
+
+#sep-products-template--23854184628483__related {
+    width: 100%;
+    padding: 32px 20px 32px;
+    box-sizing: border-box;
+  }
+
+#sep-products-template--23854184628483__related.sep-products--background.sep-products--blue .sep-products__inner {
+    background: linear-gradient(109.71deg, #b2e9ff 7.01%, #97d6ef 45.39%);
+  }
+
+#sep-products-template--23854184628483__related.sep-products--background .sep-products__inner {
+    max-width: var(--sep-container, 1920px);
+    padding: 48px 40px;
+    border-radius: 24px;
+    box-sizing: border-box;
+    background: linear-gradient(109.71deg, #e8ffc4 7.01%, #e9fbcb 45.39%);
+  }
+
+#sep-products-template--23854184628483__related .sep-products__inner {
+    width: 100%;
+    max-width: calc(1304px + var(--sep-grow));
+    margin: 0 auto;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__intro {
+    min-width: 0;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__heading {
+    margin: 0;
+    font-family: 'Baloo2-Bold';
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 56px;
+    letter-spacing: 0;
+    color: #1d1d1d;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__description,
+  #sep-products-template--23854184628483__related .sep-products__description p {
+    margin: 8px 0 0;
+    font-family: 'Baloo2-Regular';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__view-all {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 115px;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: 1px solid #558904;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background: #ffffff;
+    font-family: 'Baloo2-Bold';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+    color: #558904;
+    text-align: center;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__view-all:hover {
+    color: #ffffff;
+    background-color: #558904;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__view-all[aria-disabled='true'] {
+    cursor: default;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__editor-note {
+    margin: 24px 0 0;
+    padding: 12px 16px;
+    border: 1px dashed #558904;
+    border-radius: 8px;
+    background: #ffffff;
+    font-family: 'Baloo2-Regular', sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+    color: #383838;
+  }
+
+#sep-products-template--23854184628483__related .sep-products__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+@media screen and (max-width: 989px) {
+#sep-products-template--23854184628483__related .sep-products__grid {
+      grid-template-columns: repeat(2, minmax(0, 308px));
+      justify-content: center;
+    }
+}
+
+@media screen and (max-width: 749px) {
+#sep-products-template--23854184628483__related {
+      padding: 40px 12px 40px;
+    }
+
+#sep-products-template--23854184628483__related.sep-products--background .sep-products__inner {
+      padding: 28px 16px;
+      border-radius: 16px;
+    }
+
+#sep-products-template--23854184628483__related .sep-products__header {
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+#sep-products-template--23854184628483__related .sep-products__heading {
+      font-size: 28px;
+      line-height: 36px;
+    }
+
+#sep-products-template--23854184628483__related .sep-products__description,
+    #sep-products-template--23854184628483__related .sep-products__description p {
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+#sep-products-template--23854184628483__related .sep-products__view-all {
+      width: auto;
+      min-width: 88px;
+      min-height: 40px;
+      padding: 9px 14px;
+      font-size: 16px;
+    }
+
+#sep-products-template--23854184628483__related .sep-products__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+}
+
+@media screen and (max-width: 374px) {
+#sep-products-template--23854184628483__related .sep-products__header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+#sep-products-template--23854184628483__related .sep-products__grid {
+      gap: 8px;
+    }
+}

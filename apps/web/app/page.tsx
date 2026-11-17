@@ -1,7 +1,4 @@
-import type { Metadata } from "next";
-import Page0 from "@/components/storefront/HomePage";
-export const metadata: Metadata = { title: "Buy Stuffed Animals & Plush Toys in Pakistan | Toyshutch.pk\r – Toys Hutch" };
-export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-const query = await searchParams;
-return <Page0 />;
-}
+import HomePage from '@/features/home/home-page';
+import { pageStyles } from '@/data/page-styles';
+export const metadata = { title: "Toys Hutch | Plush Toys in Pakistan" };
+export default function Page() { return <><link rel="stylesheet" href={pageStyles.home}/><HomePage /></>; }

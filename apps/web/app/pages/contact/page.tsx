@@ -1,7 +1,4 @@
-import type { Metadata } from "next";
-import Page0 from "@/components/storefront/PagesContactPage";
-export const metadata: Metadata = { title: "Contact\r – Toys Hutch" };
-export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-const query = await searchParams;
-return <Page0 />;
-}
+import ContactPage from '@/features/information/contact-page';
+import { pageStyles } from '@/data/page-styles';
+export const metadata = { title: "Contact | Toys Hutch" };
+export default function Page() { return <><link rel="stylesheet" href={pageStyles.contact}/><ContactPage /></>; }

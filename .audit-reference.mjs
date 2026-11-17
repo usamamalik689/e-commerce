@@ -1,0 +1,11 @@
+﻿import fs from 'node:fs/promises';
+import { products } from './apps/web/data/products.ts';
+import { collections } from './apps/web/data/collections.ts';
+import { articles } from './apps/web/data/articles.ts';
+import { policies } from './apps/web/data/policies.ts';
+const routes=['/','/collections','/blogs/news','/pages/about-us','/pages/contact','/pages/frequently-asked-questions',...products.map(p=>'/products/'+p.slug),...collections.map(c=>'/collections/'+c.slug),...articles.map(a=>'/blogs/news/'+a.slug),...policies.map(p=>'/pages/'+p.slug)];
+const main=h=>h.slice(h.indexOf('<main'),h.indexOf('</main>'));
+const classes=h=>new Set([...main(h).matchAll(/class=["']([^"']*)/g)].flatMap(m=>m[1].split(/\s+/)).filter(c=>/^(sep-|toy-|main-page|jdgm)/.test(c)));
+const details={};let index=0,good=0;const failures=[];
+await Promise.all(Array.from({length:3},async()=>{while(index<routes.length){const route=routes[index++];try{const [a,b]=await Promise.all([fetch('https://toyshutch.pk'+route,{signal:AbortSignal.timeout(20000)}),fetch('http://localhost:3030'+route,{signal:AbortSignal.timeout(20000)})]);const [source,local]=await Promise.all([a.text(),b.text()]);if(a.status!==200||b.status!==200){failures.push({route,reference:a.status,local:b.status});continue;}good++;const type=route.startsWith('/products/')?'product':route.startsWith('/collections/')?'collection':route.startsWith('/blogs/news/')?'article':route;const original=classes(source),clone=classes(local);const missing=[...original].filter(c=>!clone.has(c));if(!details[type]||missing.length>details[type].missing.length)details[type]={route,missing,extra:[...clone].filter(c=>!original.has(c))};}catch(e){failures.push({route,error:e.message});}}}));
+console.log(JSON.stringify({checked:routes.length,good,failures,details},null,2));

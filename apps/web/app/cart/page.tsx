@@ -1,7 +1,2 @@
-import type { Metadata } from "next";
-import Page0 from "@/components/storefront/CartPage";
-export const metadata: Metadata = { title: "Your Shopping Cart\r – Toys Hutch" };
-export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-const query = await searchParams;
-return <Page0 />;
-}
+export const metadata = { title: "Your Cart | Toys Hutch" };
+export default function Page() { return <main id="MainContent" className="store-state-page"><h1>Your Cart</h1><div id="store-state-root"/></main>; }

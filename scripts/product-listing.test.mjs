@@ -1,4 +1,4 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { filterProducts } from '../apps/web/lib/product-listing.ts';
 import { parsePrice } from '../apps/web/lib/money.ts';
@@ -28,4 +28,32 @@ test('search and sorting work together', () => {
 test('an empty result is valid and clearing filters restores the listing', () => {
   assert.equal(filterProducts(products,new URLSearchParams('filter.v.price.lte=500')).length,0);
   assert.equal(filterProducts(products,new URLSearchParams()).length,3);
+});
+
+import { products as catalogProducts } from '../apps/web/data/products.ts';
+import { collections } from '../apps/web/data/collections.ts';
+import { articles } from '../apps/web/data/articles.ts';
+import { categoryMenu } from '../apps/web/data/navigation.ts';
+import { readdir, access } from 'node:fs/promises';
+test('all product URLs use one slug route rather than copied page folders', async () => {
+  assert.deepEqual(await readdir('apps/web/app/products'), ['[slug]']);
+  await access('apps/web/app/collections/[slug]/page.tsx');
+  await access('apps/web/app/blogs/news/[slug]/page.tsx');
+});
+test('catalog slugs are unique and variants have valid prices', () => {
+  assert.equal(new Set(catalogProducts.map(p=>p.slug)).size,catalogProducts.length);
+  for(const product of catalogProducts) {
+    assert.ok(product.title,product.slug);
+    assert.ok(product.variants.length,product.slug);
+    for(const variant of product.variants) assert.ok(Number.isInteger(variant.price)&&variant.price>=0,product.slug);
+  }
+});
+test('collection and category-menu products resolve to real product data', () => {
+  const slugs=new Set(catalogProducts.map(p=>p.slug));
+  for(const collection of collections)for(const slug of collection.productSlugs)assert.ok(slugs.has(slug),slug);
+  for(const group of categoryMenu)for(const slug of group.productSlugs)assert.ok(slugs.has(slug),slug);
+});
+test('articles have unique slugs and real content', () => {
+  assert.equal(new Set(articles.map(a=>a.slug)).size,articles.length);
+  for(const article of articles){assert.ok(article.title,article.slug);assert.ok(article.body.length,article.slug);}
 });

@@ -1,7 +1,4 @@
-import type { Metadata } from "next";
-import Page0 from "@/components/storefront/CollectionsPage";
-export const metadata: Metadata = { title: "Collections\r – Toys Hutch" };
-export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-const query = await searchParams;
-return <Page0 />;
-}
+import CollectionDirectory from '@/features/collections/collection-directory';
+import { pageStyles } from '@/data/page-styles';
+export const metadata = { title: "Collections | Toys Hutch" };
+export default function Page() { return <><link rel="stylesheet" href={pageStyles.collections}/><CollectionDirectory /></>; }

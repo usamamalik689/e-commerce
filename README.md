@@ -1,24 +1,56 @@
-# E-commerce monorepo
+﻿# Toys Hutch e-commerce
 
-- `apps/web` runs Next.js 16 App Router with TypeScript.
-- `apps/api` runs NestJS with TypeScript. It provides a Prisma client for PostgreSQL, a Redis cache service, BullMQ connection configuration, and a Cloudinary client for media.
+Next.js frontend in `apps/web`; the NestJS backend scaffold remains in `apps/api`. The storefront currently uses local product data and browser-local cart/wishlist storage. Orders, payments and message delivery will be connected to the backend later.
 
-## Local development
+## Frontend structure
 
-With Node.js 24, npm, and Docker Compose available, run from the repo root in PowerShell:
-
-```powershell
-npm install
-Copy-Item apps/api/.env.example apps/api/.env
-Copy-Item apps/web/.env.example apps/web/.env.local
-docker compose up -d --wait
-npm run dev
+```text
+apps/web/
+  app/                         Route entry points and the shared root layout
+    products/[slug]/           One product route for every product
+    collections/[slug]/        One filtered collection route
+    blogs/news/[slug]/         One article route
+    pages/[slug]/              Policy pages
+  features/
+    products/                  Product template, gallery and purchase controls
+    collections/               Collection templates and filters
+    catalog/                   Shared product card
+    blog/                      Article listing, article template and cards
+    home/sections/             Homepage sections
+    cart/                      Shared store state, drawers and checkout UI
+    search/                    Search page and suggestions
+    information/               About, contact, FAQs and policy template
+  components/
+    layout/                    Header, category menu and footer
+    shared/                    Newsletter, page hero and rich-text renderer
+    ui/                        Existing reusable UI primitives
+  data/                        Typed frontend fixtures; no HTML page snapshots
+  types/                       Shared product, article, collection and cart models
+  lib/                         Pure filtering and money helpers
+  styles/                      Global styles, theme and storefront overrides
+  public/toyshutch/            Local images, fonts, videos and stylesheets
 ```
 
-Existing PostgreSQL and Redis instances also work. Set `DATABASE_URL` and `REDIS_URL` in `apps/api/.env` to use them. Set `CLOUDINARY_URL` in that same file when cloud media is needed.
+Route files resolve a slug, select typed data, set metadata and render the appropriate feature template. Product layouts are shared; adding a product does not require creating a new page or component. Unknown slugs return 404. The root layout owns the header, footer and persistent cart provider.
 
-Open [the storefront starter](http://localhost:3000) or [the API health route](http://localhost:3001/api/health). The storefront also proxies `/api/*` to NestJS. The health route checks the HTTP process.
+Rich descriptions are semantic content nodes rendered with React. No page HTML is injected at runtime. Collection filtering, sorting, search and Load More use React state and browser history without full-page refreshes. Captured HTML/JSON, cache files and legacy import scripts have been removed.
 
-Browse and try the available endpoints in [Swagger UI](http://localhost:3001/api/docs). The generated OpenAPI schema is available at [ `/api/docs-json`](http://localhost:3001/api/docs-json).
+## Run and verify
 
-`npm run build`, `npm run typecheck`, `npm run lint`, and `npm run db:validate` verify the starter. Prisma generates its client before API development and builds. After adding the first data models, run `npm run db:migrate -- --name init` to create the first migration.
+```sh
+npm install
+npm run dev:web
+npm run build -w @ecommerce/web
+node --test scripts/product-listing.test.mjs
+```
+
+To check all product/collection/article routes and local assets against a production server:
+
+```sh
+npm run start -w @ecommerce/web -- --port 3010
+node scripts/verify-website.mjs http://localhost:3010
+```
+
+## Backend scaffold
+
+Run `npm run dev:api` for NestJS. Configure `apps/api/.env` from its example when connecting PostgreSQL, Redis or Cloudinary. `compose.yaml` supplies local PostgreSQL and Redis services. API documentation is available at `http://localhost:3001/api/docs` when running.
