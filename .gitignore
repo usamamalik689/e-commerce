@@ -6,3 +6,6 @@ dist/
 .env.*
 !.env.example
 apps/api/src/generated/
+.reference-cache/
+/reference-*.html
+/reference-sitemap*.xml
