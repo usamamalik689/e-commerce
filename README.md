@@ -19,4 +19,6 @@ Existing PostgreSQL and Redis instances also work. Set `DATABASE_URL` and `REDIS
 
 Open [the storefront starter](http://localhost:3000) or [the API health route](http://localhost:3001/api/health). The storefront also proxies `/api/*` to NestJS. The health route checks the HTTP process.
 
+Browse and try the available endpoints in [Swagger UI](http://localhost:3001/api/docs). The generated OpenAPI schema is available at [ `/api/docs-json`](http://localhost:3001/api/docs-json).
+
 `npm run build`, `npm run typecheck`, `npm run lint`, and `npm run db:validate` verify the starter. Prisma generates its client before API development and builds. After adding the first data models, run `npm run db:migrate -- --name init` to create the first migration.
