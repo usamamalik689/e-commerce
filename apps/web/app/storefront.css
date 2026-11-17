@@ -58,3 +58,22 @@ body { margin: 0; }
 @keyframes toast-in { from { opacity: 0; bottom: 18px; } to { opacity: 1; bottom: 28px; } }
 @media(max-width: 749px) { .sep-reels__splide .splide__slide { flex-basis: 46%; } .home-panel { padding: 20px; } }
 @media(prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .home-reveal { opacity: 1; transform: none; transition: none; } .home-panel,.home-toast { animation: none; } }
+
+.react-product-slot { display: contents; }
+[data-react-products] { min-width: 0; }
+main:has([data-react-products]) .sep-collection__pagination, main:has([data-react-products]) .pagination-wrapper { display: none; }
+.react-pagination { display: flex; justify-content: center; gap: 10px; margin: 35px 0; flex-wrap: wrap; }
+.react-pagination button { border: 1px solid #e6dfd2; border-radius: 50%; width: 42px; height: 42px; background: #fffdf8; color: #0d2c3d; font: inherit; cursor: pointer; }
+.react-pagination button[aria-current=page] { background: #558904; color: white; }
+.react-pagination button:disabled { opacity: .35; cursor: default; }
+@media(prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+
+main:has([data-react-products]) [data-sep-load-more], main:has([data-react-products]) .sep-collection__more { display: none !important; }
+
+.react-load-more { display: flex; justify-content: center; margin-top: 36px; }
+
+
+div[data-align="center"] { text-align: center; }
+div[data-align="right"] { text-align: right; }
+

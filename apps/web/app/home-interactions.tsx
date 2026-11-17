@@ -1,14 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
-import type { Variant } from '@/lib/store-pages';
+import type { Variant } from '@/lib/store-types';
 import CheckoutPreview from './checkout-preview';
 import { parsePrice } from '@/lib/money';
 
 type Item = { id: string; title: string; image: string; price: string; quantity: number };
 
-export default function HomeInteractions({ markup, variants = [], catalog = [], route = '/' }: { markup: string; variants?: Variant[]; catalog?: string[]; route?: string }) {
+export default function HomeInteractions({ children, variants = [], route = '/' }: { children: ReactNode; variants?: Variant[]; route?: string }) {
+  const router = useRouter();
   const root = useRef<HTMLDivElement>(null);
   const [cart, setCart] = useState<Item[]>([]);
   const [saved, setSaved] = useState<Item[]>([]);
@@ -63,9 +65,6 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
     const header = container.querySelector('[data-sep-header]');
     const search = container.querySelector<HTMLElement>('[data-sep-search]');
     const searchInput = container.querySelector<HTMLInputElement>('[data-sep-search-input]');
-    const library = document.createElement('div');
-    library.innerHTML = catalog.join('');
-    const cards = [...(catalog.length ? library : container).querySelectorAll<HTMLElement>('.sep-products__card')];
     const product = (card: Element): Item => {
       const data = card.querySelector<HTMLElement>('[data-wishlist-button]')?.dataset;
       return { id: data?.productId || '', title: data?.productTitle || 'Plush toy', image: data?.productImage || '', price: data?.productPrice || 'Rs.0', quantity: 1 };
@@ -86,13 +85,6 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
     const showSearch = () => {
       if (search) { search.hidden = false; search.classList.add('is-open'); }
       searchInput?.focus();
-    };
-    const filter = () => {
-      const results = container.querySelector('[data-sep-search-default]');
-      if (!results) return;
-      const query = searchInput?.value.toLowerCase().trim() || '';
-      const matches = cards.filter(card => product(card).title.toLowerCase().includes(query));
-      results.innerHTML = matches.length ? matches.map(card => card.outerHTML).join('') : '<p role="status">No plushies found. Try Panda, Teddy or Penguin.</p>';
     };
     const click = (event: MouseEvent) => {
       const target = event.target as Element;
@@ -134,7 +126,7 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
       if (target.closest('[data-sep-search-open]')) showSearch();
       if (target.closest('[data-sep-search-close]') && search) { search.hidden = true; search.classList.remove('is-open'); }
       const term = target.closest<HTMLElement>('[data-sep-search-term]');
-      if (term && searchInput) { searchInput.value = term.dataset.sepSearchTerm || ''; filter(); }
+      if (term && searchInput) { searchInput.value = term.dataset.sepSearchTerm || ''; searchInput.dispatchEvent(new Event('input', { bubbles: true })); }
       const wishlist = target.closest<HTMLElement>('[data-wishlist-button]');
       if (wishlist) {
         const card = wishlist.closest('.sep-products__card');
@@ -167,8 +159,8 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
           if (addons) { pendingItem = pdpItem(); addons.hidden = false; addons.querySelector<HTMLButtonElement>('button')?.focus(); }
           else addItem(pdpItem());
         }
-      } else if (form.matches('[data-sep-search-form]')) filter();
-      else if (form.matches('[data-store-search]')) window.location.assign('/search?q=' + encodeURIComponent(String(new FormData(form).get('q') || '')));
+      } else if (form.matches('[data-sep-search-form]')) router.push('/search?q=' + encodeURIComponent(String(new FormData(form).get('q') || '')));
+      else if (form.matches('[data-store-search]')) router.push('/search?q=' + encodeURIComponent(String(new FormData(form).get('q') || '')));
       else if (form.matches('[data-contact-guard]')) {
         if (form.reportValidity()) setNotice('Your message is ready. Contact delivery will be available after the email service is connected.');
       }
@@ -205,15 +197,7 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
         const value = container.querySelector<HTMLInputElement>('[data-sep-text-value]');
         if (value) value.value = toggle?.checked ? container.querySelector<HTMLInputElement>('[data-sep-text-custom]')?.value || '' : container.querySelector<HTMLSelectElement>('[data-sep-text-select]')?.value || '';
       }
-      if (input.closest('[data-sep-filters]') || input.matches('[data-sep-sort]')) {
-        const form = container.querySelector<HTMLFormElement>('[data-sep-filters]');
-        if (form) {
-          if (input.checked && input.type === 'checkbox') form.querySelectorAll<HTMLInputElement>(`input[name="${CSS.escape(input.name)}"]`).forEach(el => { if (el !== input) el.checked = false; });
-          const query = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
-          const sort = container.querySelector<HTMLSelectElement>('[data-sep-sort]'); if (sort) query.set('sort_by', sort.value);
-          window.location.assign(window.location.pathname + '?' + query.toString());
-        }
-      }
+
     };
     const observer = new IntersectionObserver(entries => entries.forEach(entry => {
       if (entry.isIntersecting) { entry.target.classList.add('home-revealed'); observer.unobserve(entry.target); }
@@ -231,14 +215,14 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
     container.querySelectorAll('main > section:not(:first-child)').forEach(section => { section.classList.add('home-reveal'); observer.observe(section); });
     container.addEventListener('click', click); container.addEventListener('submit', submit);
     container.addEventListener('change', change); container.addEventListener('input', change);
-    searchInput?.addEventListener('input', filter); document.addEventListener('keydown', escape);
+    document.addEventListener('keydown', escape);
     return () => {
       observer.disconnect(); container.removeEventListener('click', click); container.removeEventListener('submit', submit);
       window.clearInterval(carousel); window.removeEventListener('scroll', scrollHeader);
-      searchInput?.removeEventListener('input', filter); document.removeEventListener('keydown', escape);
+      document.removeEventListener('keydown', escape);
       container.removeEventListener('change', change); container.removeEventListener('input', change);
     };
-  }, [catalog, variants]);
+  }, [variants, router]);
 
   const items = panel === 'wishlist' ? saved : cart;
   const panelContent = panel && <div className={stateTarget ? 'home-panel-inline' : 'home-panel-overlay'} onClick={() => { if (!stateTarget) setPanel(null); }}>
@@ -251,7 +235,7 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
       }}>
         <header><h2>{panel === 'cart' ? 'Your Cart' : 'Your Wishlist'}</h2>{!stateTarget && <button ref={closeButton} onClick={() => setPanel(null)} aria-label="Close panel">×</button>}</header>
-        {!items.length && <div className="home-empty"><p>{panel === 'cart' ? 'Your cart is empty!' : 'Save your favorite cuddle companions.'}</p><button onClick={() => stateTarget ? window.location.assign('/collections/all') : setPanel(null)}>Continue shopping →</button></div>}
+        {!items.length && <div className="home-empty"><p>{panel === 'cart' ? 'Your cart is empty!' : 'Save your favorite cuddle companions.'}</p><button onClick={() => stateTarget ? router.push('/collections/all') : setPanel(null)}>Continue shopping →</button></div>}
         {items.map(item => <article key={item.id} className="home-cart-item">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={item.image} alt={item.title} width="88" height="88" />
@@ -260,11 +244,11 @@ export default function HomeInteractions({ markup, variants = [], catalog = [], 
             <button className="home-remove" onClick={() => panel === 'cart' ? setCart(c => c.filter(p => p.id !== item.id)) : setSaved(c => c.filter(p => p.id !== item.id))}>Remove</button>
           </div>
         </article>)}
-        {panel === 'cart' && items.length > 0 && <footer><h3>Estimated total <span>Rs.{cart.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0).toLocaleString('en-PK')}</span></h3><p>Shipping calculated at checkout.</p><button onClick={() => window.location.assign('/checkout')}>Go to Checkout →</button></footer>}
+        {panel === 'cart' && items.length > 0 && <footer><h3>Estimated total <span>Rs.{cart.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0).toLocaleString('en-PK')}</span></h3><p>Shipping calculated at checkout.</p><button onClick={() => router.push('/checkout')}>Go to Checkout →</button></footer>}
       </section>
     </div>;
   return <>
-    <div ref={root} dangerouslySetInnerHTML={{ __html: markup }} />
+    <div ref={root}>{children}</div>
     {notice && <div className="home-toast" role="status">{notice}</div>}
     {stateTarget && panelContent ? createPortal(panelContent, stateTarget) : panelContent}
     {checkoutTarget && createPortal(<CheckoutPreview />, checkoutTarget)}

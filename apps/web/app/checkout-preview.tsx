@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { parsePrice } from '@/lib/money';
 type CartItem = { id: string; title: string; image: string; price: string; quantity: number };
 
@@ -11,7 +12,7 @@ export default function CheckoutPreview() {
   const total = items.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0);
   return <div className="store-checkout">
     <form onSubmit={event => { event.preventDefault(); event.stopPropagation(); setMessage('This is a checkout preview. No order or payment has been submitted.'); }}>
-      <a href="/cart">← Back to cart</a><h2>Contact</h2>
+      <Link href="/cart">← Back to cart</Link><h2>Contact</h2>
       <label>Email or mobile phone number<input required name="contact" autoComplete="email" placeholder="Email or mobile phone number" /></label>
       <h2>Delivery</h2><label>Country / Region<select name="country" defaultValue="Pakistan"><option>Pakistan</option></select></label>
       <div className="store-field-pair"><label>First name<input required name="firstName" autoComplete="given-name" /></label><label>Last name<input required name="lastName" autoComplete="family-name" /></label></div>
@@ -24,7 +25,7 @@ export default function CheckoutPreview() {
       <button type="submit" disabled={!items.length}>Preview order · Rs.{total.toLocaleString('en-PK')}</button>
       {message && <p role="status">{message}</p>}
     </form>
-    <aside><h2>Order summary</h2>{!items.length && <p>Your cart is empty. <a href="/collections/all">Find your kind of cute →</a></p>}
+    <aside><h2>Order summary</h2>{!items.length && <p>Your cart is empty. <Link href="/collections/all">Find your kind of cute →</Link></p>}
       {items.map(item => <article className="home-cart-item" key={item.id}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.image} alt={item.title} width="72" height="72" /><div><h3>{item.title}</h3><p>{item.quantity} × {item.price}</p></div>

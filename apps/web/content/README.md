@@ -1,18 +1,11 @@
-# Storefront reference content
+﻿# Reference archive
 
-The local storefront includes 175 captured page views from Toys Hutch: all public linked products, collections, collection layouts and pagination, blog articles, information pages, and policy pages. Wishlist and cart use local browser storage. Checkout is a branded frontend preview.
+These JSON files are historical captures used to compare the original Toys Hutch website. The application does not import them or render HTML from them.
 
-Page markup and page-specific CSS preserve the reference's layouts and responsive breakpoints. Images, fonts, gallery videos and stylesheets live in `public/toyshutch`; no Shopify runtime or tracking scripts are executed. `app/home-interactions.tsx` implements the local interactions, and `lib/store-pages.ts` handles route lookup, collection filtering, sorting and search.
+The storefront now uses explicit Next.js routes in `app/`, React page components in `components/storefront/`, a shared `product-card.tsx`, and typed catalog modules. Each product, collection, article and information route has a `page.tsx` entry. Query layouts remain supported by their collection or blog route.
 
-Run from the repository root:
+`components/storefront/product-results.tsx` renders listings with React state. Filtering, sorting, search and Load More use browser history or Next navigation without a full document reload. Cart and wishlist use browser-local storage. Backend ordering, payments and message delivery are intentionally deferred.
 
-```sh
-npm run dev:web
-npm run build -w @ecommerce/web
-```
+Images, fonts, videos and reference styles remain local in `public/toyshutch/`. Do not run the legacy HTML import/finalize scripts against the React application; these are archive tools.
 
-To refresh the reference content, run `node scripts/import-website.mjs` followed by `node scripts/finalize-website.mjs`. The importer caches reference responses in `.reference-cache`, reuses local assets, and resumes from `content/routes.json`.
-
-After starting a production server, verify all routes and imported assets with `node scripts/verify-website.mjs http://localhost:3010`.
-
-Orders, payments, newsletter subscriptions and contact-message delivery require service integrations. The preview does not submit these to the original store. Inventory and prices are captured reference data, not a live Shopify connection.
+Run the UI with `npm run dev:web`. Build with `npm run build -w @ecommerce/web`. Check listing behavior with `node --test scripts/product-listing.test.mjs`.
